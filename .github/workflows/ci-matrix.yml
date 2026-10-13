@@ -1,0 +1,30 @@
+# Quy trình CI kiểm thử đa phiên bản JDK bằng Matrix Strategy
+name: CI Matrix
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-matrix:
+    name: test-matrix (${{ matrix.java-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: ['17', '21']
+    steps:
+      - name: Checkout ma nguon
+        uses: actions/checkout@v5
+
+      - name: Cai dat JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Cap quyen thuc thi cho gradlew
+        run: chmod +x gradlew
+
+      - name: Chay kiem thu
+        run: ./gradlew test
